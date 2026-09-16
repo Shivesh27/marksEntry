@@ -7,15 +7,26 @@
     "dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && electron .\"",
     "build:web": "vite build",
     "build:python": "pyinstaller --noconfirm --onefile --name marks_backend --distpath backend/dist --workpath backend/build --specpath backend backend/marks_backend.py",
-    "dist": "npm run build:web && npm run build:python && electron-builder"
+    "dist:mac": "npm run build:web && npm run build:python && electron-builder --mac",
+    "dist:win": "npm run build:web && npm run build:python && electron-builder --win"
   },
   "build": {
     "appId": "com.srikakatiya.marksentry",
     "productName": "Marks Entry",
     "directories": { "output": "release" },
     "files": ["web-dist/**", "electron/**", "package.json"],
-    "extraResources": [{ "from": "backend/dist/marks_backend", "to": "backend/marks_backend" }],
-    "mac": { "target": ["dmg"] }
+    "mac": {
+      "target": ["dmg"],
+      "extraResources": [
+        { "from": "backend/dist/marks_backend", "to": "backend/marks_backend" }
+      ]
+    },
+    "win": {
+      "target": ["nsis"],
+      "extraResources": [
+        { "from": "backend/dist/marks_backend.exe", "to": "backend/marks_backend.exe" }
+      ]
+    }
   },
   "devDependencies": {
     "@vitejs/plugin-react": "4.3.4",

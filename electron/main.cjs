@@ -8,8 +8,15 @@ let port;
 let backendError = "";
 
 function backendCommand() {
-  if (app.isPackaged) return [path.join(process.resourcesPath, "backend", "marks_backend"), []];
-  return [process.env.PYTHON || "python3", [path.join(__dirname, "..", "backend", "marks_backend.py")]];
+  if (app.isPackaged) {
+    // Dynamically choose .exe for Windows and raw binary for macOS
+    const exeName = process.platform === "win32" ? "marks_backend.exe" : "marks_backend";
+    return [path.join(process.resourcesPath, "backend", exeName), []];
+  }
+  
+  // In development mode, fallback to 'python' on Windows and 'python3' on macOS/Linux
+  const defaultPython = process.platform === "win32" ? "python" : "python3";
+  return [process.env.PYTHON || defaultPython, [path.join(__dirname, "..", "backend", "marks_backend.py")]];
 }
 
 function healthCheck() {
